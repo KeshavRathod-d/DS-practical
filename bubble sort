@@ -1,0 +1,30 @@
+#include<stdio.h> 
+int main(){ 
+    int a[100],i,b,x; 
+    printf("Enter the size of an array: "); 
+    scanf("%d",&x); 
+    printf("Enter the array element:\n"); 
+    for ( i = 0; i < x; i++) 
+    { 
+        scanf("%d",&a[i]); 
+    } 
+    for(int i=0;i<x-1;i++){ 
+            for(int b=0;b<x-i-1;b++){ 
+                if (a[b]>a[b+1]) { 
+                    // swap 
+                    int temp=a[b]; 
+                    a[b]=a[b+1]; 
+                    a[b+1]=temp; 
+                     
+                } 
+            } 
+        } 
+    printf("The new array is:\n"); 
+    for ( b = 0; b < x; b++) 
+    { 
+        printf("%d\t",a[b]); 
+    } 
+     
+     
+ 
+} 
