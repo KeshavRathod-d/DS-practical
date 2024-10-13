@@ -1,0 +1,194 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+#define MAX 100
+
+// Stack structure
+struct Stack {
+int top;
+char items[MAX];
+};
+
+// Initialize stack
+void initStack(struct Stack* s) {
+s->top = -1;
+}
+
+// Check if stack is empty
+int isEmpty(struct Stack* s) {
+return s->top == -1;
+}
+
+// Push operation
+void push(struct Stack* s, char value) {
+if (s->top == MAX - 1) {
+printf("Stack Overflow\n");
+return;
+}
+s->items[++(s->top)] = value;
+}
+
+// Pop operation
+char pop(struct Stack* s) {
+if (isEmpty(s)) {
+printf("Stack Underflow\n");
+return -1;
+}
+return s->items[(s->top)--];
+}
+
+// Peek the top of stack
+char peek(struct Stack* s) {
+if (isEmpty(s))
+return -1;
+return s->items[s->top];
+}
+
+// Check if the character is an operand
+int isOperand(char ch) {
+return isalnum(ch);
+}
+
+// Return precedence of operator
+int precedence(char ch) {
+switch (ch) {
+case '+':
+case '-':
+return 1;
+case '*':
+case '/':
+return 2;
+
+case '^':
+return 3;
+}
+return -1;
+}
+
+// Reverse string
+void reverseString(char* str) {
+int n = strlen(str);
+for (int i = 0; i < n / 2; i++) {
+char temp = str[i];
+str[i] = str[n - i - 1];
+str[n - i - 1] = temp;
+}
+}
+
+// Function to convert infix to postfix
+void infixToPostfix(char* infix, char* postfix) {
+struct Stack s;
+initStack(&s);
+int k = 0;
+
+for (int i = 0; infix[i]; i++) {
+if (isOperand(infix[i])) {
+postfix[k++] = infix[i];
+} else if (infix[i] == '(') {
+push(&s, infix[i]);
+} else if (infix[i] == ')') {
+while (!isEmpty(&s) && peek(&s) != '(')
+postfix[k++] = pop(&s);
+pop(&s); // pop '('
+
+} else { // operator
+while (!isEmpty(&s) && precedence(infix[i]) <= precedence(peek(&s)))
+postfix[k++] = pop(&s);
+push(&s, infix[i]);
+}
+}
+
+while (!isEmpty(&s))
+postfix[k++] = pop(&s);
+
+postfix[k] = '\0';
+}
+
+// Function to convert infix to prefix
+void infixToPrefix(char* infix, char* prefix) {
+reverseString(infix); // Reverse infix expression
+
+// Replace '(' with ')' and vice versa
+for (int i = 0; infix[i]; i++) {
+if (infix[i] == '(')
+infix[i] = ')';
+else if (infix[i] == ')')
+infix[i] = '(';
+}
+
+// Convert the modified infix to postfix
+infixToPostfix(infix, prefix);
+reverseString(prefix); // Reverse the result to get the prefix
+}
+
+// Function to evaluate postfix expression
+
+int evaluatePostfix(char* postfix) {
+struct Stack s;
+initStack(&s);
+int i;
+
+for (i = 0; postfix[i]; i++) {
+if (isdigit(postfix[i])) {
+push(&s, postfix[i] - '0');
+} else {
+int val1 = pop(&s);
+int val2 = pop(&s);
+switch (postfix[i]) {
+case '+': push(&s, val2 + val1); break;
+case '-': push(&s, val2 - val1); break;
+case '*': push(&s, val2 * val1); break;
+case '/': push(&s, val2 / val1); break;
+}
+}
+}
+return pop(&s);
+}
+
+// Menu function
+void menu() {
+int choice;
+char infix[MAX], postfix[MAX], prefix[MAX];
+do {
+printf("\nMenu:\n");
+printf("1. Infix to Postfix\n");
+printf("2. Infix to Prefix\n");
+printf("3. Evaluate Postfix Expression\n");
+
+printf("4. Exit\n");
+printf("Enter your choice: ");
+scanf("%d", &choice);
+
+switch (choice) {
+case 1:
+printf("Enter infix expression: ");
+scanf("%s", infix);
+infixToPostfix(infix, postfix);
+printf("Postfix expression: %s\n", postfix);
+break;
+case 2:
+printf("Enter infix expression: ");
+scanf("%s", infix);
+infixToPrefix(infix, prefix);
+printf("Prefix expression: %s\n", prefix);
+break;
+case 3:
+printf("Enter postfix expression: ");
+scanf("%s", postfix);
+printf("Result of postfix evaluation: %d\n", evaluatePostfix(postfix));
+break;
+case 4:
+printf("Exiting...\n");
+break;
+default:
+printf("Invalid choice! Please try again.\n");
+}
+} while (choice != 4);
+}
+
+int main() {
+menu();
+return 0;
+}
