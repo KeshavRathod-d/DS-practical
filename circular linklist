@@ -1,0 +1,182 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+struct node {
+    int data;
+    struct node *next;
+};
+
+struct node* createList() {
+    struct node *last = NULL, *p;
+    char ch;
+
+    do {
+        p = (struct node *)malloc(sizeof(struct node));
+        // if (p == NULL) {
+        //     printf("Memory allocation failed!\n");
+        //     exit(1);
+        // }
+
+        printf("Enter data for the node: ");
+        scanf("%d", &p->data);
+
+        if (last == NULL) {
+            last = p;
+            p->next = p;
+        } else {
+            p->next = last->next;
+            last->next = p;
+            last = p;
+        }
+
+        printf("Press 'y' to add another node: ");
+        ch = getchar();
+        ch = getchar();
+    } while (ch == 'y' || ch == 'Y');
+
+    return last;
+}
+
+void traverseList(struct node *last) {
+    if (last == NULL) {
+        printf("The list is empty.\n");
+        return;
+    }
+
+    struct node *temp = last->next;
+    printf("Circular Singly Linked List: ");
+    do {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    } while (temp != last->next);
+    printf("(Back to start)\n");
+}
+
+struct node* insertAtBeginning(struct node *last, int value) {
+    struct node *p = (struct node *)malloc(sizeof(struct node));
+    if (p == NULL) {
+        printf("Memory allocation failed!\n");
+        exit(1);
+    }
+
+    p->data = value;
+
+    if (last == NULL) {
+        last = p;
+        p->next = p;
+    } else {
+        p->next = last->next;
+        last->next = p;
+    }
+    return last;
+}
+
+struct node* insertAtEnd(struct node *last, int value) {
+    struct node *p = (struct node *)malloc(sizeof(struct node));
+    if (p == NULL) {
+        printf("Memory allocation failed!\n");
+        exit(1);
+    }
+
+    p->data = value;
+
+    if (last == NULL) {
+        last = p;
+        p->next = p;
+    } else {
+        p->next = last->next;
+        last->next = p;
+        last = p;
+    }
+    return last;
+}
+
+struct node* deleteFromBeginning(struct node *last) {
+    if (last == NULL) {
+        printf("The list is empty, nothing to delete.\n");
+        return NULL;
+    }
+
+    struct node *temp = last->next;
+    if (last == temp) {
+        free(temp);
+        last = NULL;
+    } else {
+        last->next = temp->next;
+        free(temp);
+    }
+    return last;
+}
+
+struct node* deleteFromEnd(struct node *last) {
+    if (last == NULL) {
+        printf("The list is empty, nothing to delete.\n");
+        return NULL;
+    }
+
+    struct node *temp = last->next, *prev = NULL;
+    if (last == temp) {
+        free(last);
+        last = NULL;
+    } else {
+        while (temp->next != last->next) {
+            prev = temp;
+            temp = temp->next;
+        }
+        prev->next = last->next;
+        free(last);
+        last = prev;
+    }
+    return last;
+}
+
+int main() {
+    struct node *last = NULL;
+    int choice, value;
+
+    do {
+        printf("\nMenu:\n");
+        printf("1. Create List\n");
+        printf("2. Insert at Beginning\n");
+        printf("3. Insert at End\n");
+        printf("4. Delete from Beginning\n");
+        printf("5. Delete from End\n");
+        printf("6. Traverse List\n");
+        printf("7. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                last = createList();
+                break;
+            case 2:
+                printf("Enter value to insert at the beginning: ");
+                scanf("%d", &value);
+                last = insertAtBeginning(last, value);
+                break;
+            case 3:
+                printf("Enter value to insert at the end: ");
+                scanf("%d", &value);
+                last = insertAtEnd(last, value);
+                break;
+            case 4:
+                last = deleteFromBeginning(last);
+                break;
+            case 5:
+                last = deleteFromEnd(last);
+                break;
+            case 6:
+                traverseList(last);
+                break;
+            case 7:
+                printf("Exiting the program.\n");
+                break;
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    } while (choice != 7);
+
+    return 0;
+}
